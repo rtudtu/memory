@@ -18,21 +18,26 @@ class MemoryGame extends React.Component {
     this.state = {
       win: false,
       clicks: 0,
+      score: 0,
       selected: [],
       correct: []
     };
   }
   
+  // Reset the game (and shuffle cards)
   reset() {
     this.memoryCards = new MemoryCards();
     this.memoryCards.genCards();
-    this.state.win = false;
-    this.state.clicks = 0;
-    this.state.selected = [];
-    this.state.correct = [];
-    this.setState({});
+    this.setState({
+      win: false,
+      clicks: 0,
+      score: 0,
+      selected: [],
+      correct: []
+    });
   }
 
+  // Returns all the cards' html representation
   getCards() {
     let cards = [];
     let clicked = this.cardClicked;
@@ -49,13 +54,18 @@ class MemoryGame extends React.Component {
     return cards;
   }
 
+  // Runs when the card ids' letters do not match
   clearCards(id1, id2) {
     this.memoryCards.toggleCard(id1, false);
     this.memoryCards.toggleCard(id2, false);
     this.state.selected = [];
     this.setState({});
+    //this.setState({
+      //selected: []
+    //});
   }
 
+  // When a card is clicked, check how many have been already clicked and update state appropriately
   cardClicked(id) {
     if (this.state.selected.length % 2 === 0) {
       if (this.state.selected.length === 2) {
@@ -65,12 +75,24 @@ class MemoryGame extends React.Component {
       this.memoryCards.toggleCard(id, true);
       this.state.selected.push(id);
       this.state.clicks++
+      this.state.score--
       this.setState({});
+      //this.setState({
+        //selected: _.concat(this.state.selected, id),
+	//clicks: this.state.clicks + 1,
+	//score: this.state.score - 1
+      //});
     } else {
       this.memoryCards.toggleCard(id, true);
       this.state.selected.push(id);
       this.state.clicks++
+      this.state.score--
       this.setState({});
+      //this.setState({
+        //selected: _.concat(this.state.selected, id),
+	//clicks: this.state.clicks + 1,
+	//score: this.state.score - 1
+      //});
       if (this.memoryCards.matchCards(this.memoryCards.getCard(this.state.selected[0]), 
 	                                this.memoryCards.getCard(this.state.selected[1]))) {
 	this.memoryCards.setMatched(id, true);
@@ -78,25 +100,29 @@ class MemoryGame extends React.Component {
 	this.state.correct.push(this.state.selected[0]);
 	this.state.correct.push(this.state.selected[1]);
 	this.state.selected = [];
+        this.state.score += 15;
+	//this.setState({
+	  //selected: [],
+          ////correct: this.state.correct.concat(this.state.selected[0]).concat(this.state.selected[1]),
+          //correct: _.concat(_.concat(this.state.correct, this.state.selected[0]), this.state.selected[1]),
+          //score: this.state.score + 15
+	//});
 	if(this.state.correct.length === 16) {
-          this.state.win = true;
+	  this.setState({
+	    win: true
+	  });
 	}
-	this.setState({});
       } else {
-        this.timeout = setTimeout(() => { this.clearCards(this.state.selected[0], this.state.selected[1]); }, 2000);
+        this.timeout = setTimeout(() => { this.clearCards(this.state.selected[0], this.state.selected[1]); }, 1000);
       }
     }
   }
   
   render() {
     let cards = this.getCards();
-	  console.log(cards);
-	  console.log(this.state.selected);
-	  console.log(this.state.correct);
-	  console.log("win=".concat(this.state.win));
-    let scoreMessage = "Clicks: " + this.state.clicks;
+    let scoreMessage = "Clicks: " + this.state.clicks + "      Score: " + this.state.score;
     if (this.state.win) {
-      scoreMessage = "You win! Number of Clicks: " + this.state.clicks;
+      scoreMessage = "You win! Number of Clicks: [" + this.state.clicks + "]     Score: [" + this.state.score + "]";
     }
     return(
 	<div className="MemoryGame">

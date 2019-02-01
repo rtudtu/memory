@@ -13,14 +13,18 @@ class CardDisplay extends React.Component {
   }
 
   render() {
+    let classNameFace = "Card-Face";
+    let classNameBack = "Card-Back";
     if (this.props.showFace) {
       return (
-        <span className="Card-Face">[{this.props.letter}]</span>
+	<div className={classNameFace}>
+	  <span>{this.props.letter}</span>
+	</div>
       );      
     } else {
       return (
-	<div className="Card-Back">
-	  <img src="cardback.png" alt="[-]" onClick={this.clicked}/>
+	<div className={classNameBack} onClick={this.clicked}>
+	  <span>-</span>
 	</div>
       );
     }
